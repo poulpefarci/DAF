@@ -14,18 +14,24 @@ namespace SiteDaf.Controllers
         }
 
         // Affiche les équipes et les joueurs
-        public IActionResult Index()
+        public IActionResult Index(string searchString)
         {
-            var teams = _context.Equipes
-                                .Select(e => new TeamViewModel
-                                {
-                                    IdEquipe = e.IdEquipe,
-                                    NomEquipe = e.NomEquipe,
-                                    Joueurs = _context.Joueurs.Where(j => j.IdEquipe == e.IdEquipe).ToList()
-                                })
-                                .ToList();
+            var teams = from t in _context.Equipes
+                        select t;
 
-            return View(teams);
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                teams = teams.Where(s => s.NomEquipe.Contains(searchString));
+            }
+
+            var teamViewModels = teams.Select(e => new TeamViewModel
+            {
+                IdEquipe = e.IdEquipe,
+                NomEquipe = e.NomEquipe,
+                Joueurs = _context.Joueurs.Where(j => j.IdEquipe == e.IdEquipe).ToList()
+            }).ToList();
+
+            return View(teamViewModels);
         }
 
         // Supprimer une équipe
