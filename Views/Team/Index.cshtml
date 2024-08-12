@@ -1,0 +1,35 @@
+﻿@model IEnumerable<SiteDaf.Controllers.TeamViewModel>
+
+<h1>Liste des Équipes</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nom de l'équipe</th>
+            <th>Joueurs</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var team in Model)
+        {
+            <tr>
+                <td>@team.NomEquipe</td>
+                <td>
+                    <ul>
+                        @foreach (var joueur in team.Joueurs)
+                        {
+                            <li>@joueur.Nom</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "Team", new { id = team.IdEquipe })" class="btn btn-primary">Modifier</a>
+                    <a href="@Url.Action("Delete", "Team", new { id = team.IdEquipe })" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette équipe?');">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Create", "Team")" class="btn btn-success">Créer une nouvelle équipe</a>
