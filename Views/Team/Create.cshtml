@@ -19,11 +19,15 @@
                 <span asp-validation-for="Joueurs[i].Nom" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Joueurs[i].Sexe" class="control-label">Sexe</label>
-                <select asp-for="Joueurs[i].Sexe" class="form-control">
-                    <option value="1">Garçon</option>
-                    <option value="2">Fille</option>
-                </select>
+                <label>Sexe</label>
+                <div>
+                    <label>
+                        <input type="radio" asp-for="Joueurs[i].Sexe" value="1" /> G
+                    </label>
+                    <label>
+                        <input type="radio" asp-for="Joueurs[i].Sexe" value="2" /> F
+                    </label>
+                </div>
                 <span asp-validation-for="Joueurs[i].Sexe" class="text-danger"></span>
             </div>
             <div>
@@ -45,16 +49,21 @@
         function addPlayer() {
             var joueurDiv = document.createElement('div');
             joueurDiv.innerHTML = `
+                        <input type="hidden" name="Joueurs[${playerIndex}].IdJoueur" value="0" />
                         <div class="form-group">
                             <label>Nom du joueur</label>
                             <input name="Joueurs[${playerIndex}].Nom" class="form-control" />
                         </div>
                         <div class="form-group">
                             <label>Sexe</label>
-                            <select name="Joueurs[${playerIndex}].Sexe" class="form-control">
-                                <option value="1">Garçon</option>
-                                <option value="2">Fille</option>
-                            </select>
+                            <div>
+                                <label>
+                                    <input type="radio" name="Joueurs[${playerIndex}].Sexe" value="1" /> G
+                                </label>
+                                <label>
+                                    <input type="radio" name="Joueurs[${playerIndex}].Sexe" value="2" /> F
+                                </label>
+                            </div>
                         </div>
                         <button type="button" class="btn btn-danger" onclick="removePlayer(this)">Supprimer ce joueur</button>
                         <hr />
@@ -65,7 +74,6 @@
 
         function removePlayer(button) {
             button.parentElement.remove();
-            // Optionnel: réajustez les indices après la suppression d'un joueur.
         }
     </script>
 }

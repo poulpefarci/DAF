@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SiteDaf.Models;
+using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq;
 
 namespace SiteDaf.Controllers
@@ -12,6 +14,75 @@ namespace SiteDaf.Controllers
         {
             _context = context;
         }
+
+        // impression
+        public IActionResult Print(int id)
+        {
+            var result = (from e in _context.Vue_impressions
+                          where e.IdEquipe == id
+                          select new
+                          {
+                              NomEquipe = e.NomEquipe,
+                              NomJoueur = e.NomJoueur,
+                              ADJECTIF = e.ADJECTIF,
+                              Z13 = e.Z13
+                          }).ToList();  // Convertir en liste pour gérer l'indexation
+
+            var printDocument = new PrintDocument();
+            int currentPageIndex = 0;  // Pour suivre la progression de l'impression
+
+            printDocument.PrintPage += (sender, e) =>
+            {
+                if (currentPageIndex < result.Count)
+                {
+                    int yPos = 100; // Position initiale
+                    int leftMargin = e.MarginBounds.Left;
+
+                    var item = result[currentPageIndex];
+
+                    // Dessiner l'équipe et le personnage
+                    using (Font enchantedLandFont = new Font("Enchanted Land", 20))
+                    {
+                        e.Graphics.DrawString("Équipe / Personnage", enchantedLandFont, Brushes.Black, leftMargin, yPos);
+                        yPos += enchantedLandFont.Height + 20;
+                    }
+
+                    // Dessiner le nom de l'équipe et du joueur
+                    using (Font berryRotundaFont = new Font("Berry Rotunda", 16))
+                    {
+                        string equipeJoueur = $"{item.NomEquipe} / {item.NomJoueur}";
+                        e.Graphics.DrawString(equipeJoueur, berryRotundaFont, Brushes.Black, leftMargin, yPos);
+                        yPos += berryRotundaFont.Height + 40;
+                    }
+
+                    // Dessiner le niveau de réussite
+                    using (Font berryRotundaFont = new Font("Berry Rotunda", 16))
+                    {
+                        e.Graphics.DrawString("Niveau de réussite", berryRotundaFont, Brushes.Black, leftMargin, yPos);
+                        yPos += berryRotundaFont.Height + 20;
+
+                        // Dessiner le Z13 et l'adjectif
+                        string zone3Adjectif = $"{item.Z13} \n{item.ADJECTIF}";
+                        e.Graphics.DrawString(zone3Adjectif, berryRotundaFont, Brushes.Black, leftMargin, yPos);
+                        yPos += berryRotundaFont.Height + 40;
+                    }
+
+                    currentPageIndex++;
+
+                    e.HasMorePages = currentPageIndex < result.Count;  // Continuer s'il reste des joueurs à imprimer
+                }
+                else
+                {
+                    e.HasMorePages = false;  // Arrêter l'impression
+                }
+            };
+
+            printDocument.Print();  // Envoie le document à l'imprimante
+
+            return Ok("Impression en cours...");
+        }
+
+
 
         // Affiche les équipes et les joueurs
         public IActionResult Index(string searchString)

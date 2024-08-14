@@ -9,6 +9,7 @@ public partial class Equipe
 
     public string? NomEquipe { get; set; }
 
+
     public int? Final { get; set; }
 
     public int? Temps { get; set; }

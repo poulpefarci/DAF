@@ -1,7 +1,10 @@
+using DinkToPdf;
 using Microsoft.EntityFrameworkCore;
 using SiteDaf.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+// ajouter dink to pdf
+builder.Services.AddSingleton(typeof(DinkToPdf.Contracts.IConverter), new SynchronizedConverter(new PdfTools()));
 
 // Ajouter la configuration pour DAFContext
 builder.Services.AddDbContext<DAFContext>(options =>
